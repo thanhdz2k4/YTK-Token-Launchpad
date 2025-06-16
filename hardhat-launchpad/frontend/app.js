@@ -1,3 +1,6 @@
+(function() {
+'use strict';
+
 // Contract addresses - Update these with your deployed contracts
 const LAUNCHPAD_ADDRESS = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
 const TOKEN_ADDRESS = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
@@ -403,11 +406,12 @@ if (window.ethereum) {
         } else {
             // User switched accounts
             location.reload();
-        }
-    });
+        }    });
     
     window.ethereum.on('chainChanged', function (chainId) {
         // User switched networks
         location.reload();
     });
 }
+
+})(); // Close IIFE
