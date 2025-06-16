@@ -56,13 +56,41 @@ const transactionList = document.getElementById('transactionList');
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOMContentLoaded event fired');
+    console.log('Document ready, checking elements...');
+    
+    // Check if all required elements exist
+    const elements = {
+        connectWalletBtn: document.getElementById('connectWallet'),
+        walletStatus: document.getElementById('walletStatus'),
+        ethAmountInput: document.getElementById('ethAmount'),
+        buyTokensBtn: document.getElementById('buyTokensBtn')
+    };
+    
+    Object.entries(elements).forEach(([name, element]) => {
+        if (element) {
+            console.log(`✓ ${name} found`);
+        } else {
+            console.error(`✗ ${name} NOT found`);
+        }
+    });
+    
     checkWalletConnection();
     setupEventListeners();
 });
 
 // Setup event listeners
 function setupEventListeners() {
-    connectWalletBtn.addEventListener('click', connectWallet);
+    console.log('Setting up event listeners...');
+    console.log('connectWalletBtn:', connectWalletBtn);
+    
+    if (connectWalletBtn) {
+        connectWalletBtn.addEventListener('click', connectWallet);
+        console.log('Connect wallet event listener added');
+    } else {
+        console.error('connectWalletBtn element not found!');
+    }
+    
     ethAmountInput.addEventListener('input', calculateTokenAmount);
     buyTokensBtn.addEventListener('click', buyTokens);
 }
@@ -86,12 +114,18 @@ async function checkWalletConnection() {
 
 // Connect wallet
 async function connectWallet() {
+    console.log('connectWallet function called');
+    console.log('window.ethereum:', typeof window.ethereum);
+    console.log('connectWalletBtn:', connectWalletBtn);
+    
     if (typeof window.ethereum !== 'undefined') {
         try {
+            console.log('MetaMask detected, requesting accounts...');
             showLoading(connectWalletBtn, true);
             
             // Request account access
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            console.log('Accounts received:', accounts);
             
             await initializeContracts();
             await updateUI();
@@ -104,6 +138,7 @@ async function connectWallet() {
             showLoading(connectWalletBtn, false);
         }
     } else {
+        console.log('MetaMask not detected');
         showAlert('Please install MetaMask', 'warning');
     }
 }
