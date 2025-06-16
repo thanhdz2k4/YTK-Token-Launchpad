@@ -1,0 +1,44 @@
+{
+  "name": "ytk-launchpad",
+  "version": "1.0.0",
+  "description": "Decentralized Token Launchpad with Bootstrap UI",
+  "main": "frontend/index.html",
+  "scripts": {
+    "dev": "npx hardhat node",
+    "deploy:local": "npx hardhat run scripts/deploy-lauchpad.js --network localhost",
+    "deploy:testnet": "npx hardhat run scripts/deploy-testnet.js --network sepolia", 
+    "test": "npx hardhat test",
+    "compile": "npx hardhat compile",
+    "frontend": "cd frontend && npx http-server . -p 3000",
+    "vercel": "vercel --cwd frontend",
+    "start": "cd frontend && npx http-server . -p 3000"
+  },
+  "keywords": [
+    "blockchain",
+    "ethereum", 
+    "defi",
+    "launchpad",
+    "token-sale",
+    "bootstrap",
+    "hardhat",
+    "solidity"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/ytk-launchpad.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/ytk-launchpad/issues"
+  },
+  "homepage": "https://ytk-launchpad.vercel.app",
+  "dependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@openzeppelin/contracts": "^5.0.0",
+    "hardhat": "^2.24.3"
+  },
+  "devDependencies": {
+    "dotenv": "^16.0.0"
+  }
+}

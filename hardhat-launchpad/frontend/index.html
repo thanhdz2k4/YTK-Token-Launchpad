@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YTK Token Launchpad - Decentralized Token Sale Platform</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Join YTK Token Launchpad - A secure, decentralized platform for token sales. Buy YTK tokens with ETH at the best rates.">
+    <meta name="keywords" content="YTK, token, launchpad, DeFi, Ethereum, token sale, cryptocurrency">
+    <meta name="author" content="YTK Launchpad Team">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="YTK Token Launchpad">
+    <meta property="og:description" content="Secure decentralized token launchpad. Join our exclusive token sale!">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ytk-launchpad.vercel.app">
+    <meta property="og:image" content="https://ytk-launchpad.vercel.app/og-image.png">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="YTK Token Launchpad">
+    <meta name="twitter:description" content="Join our exclusive YTK token sale on the best DeFi launchpad platform">
+    <meta name="twitter:image" content="https://ytk-launchpad.vercel.app/twitter-image.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .card-custom {
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: none;
+        }
+        
+        .btn-custom {
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .progress-custom {
+            height: 25px;
+            border-radius: 15px;
+        }
+        
+        .token-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .loading {
+            display: none;
+        }
+        
+        .alert-custom {
+            border-radius: 10px;
+            border: none;
+        }
+        
+        .countdown {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark gradient-bg">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">
+                <span class="token-icon me-2">YTK</span>
+                YTK Launchpad
+            </a>
+            <div class="navbar-nav ms-auto">
+                <button class="btn btn-outline-light btn-custom" id="connectWallet">
+                    Connect Wallet
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="gradient-bg py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">YTK Token Sale</h1>
+                    <p class="lead mb-4">Join the future of DeFi with YourToken (YTK). Get tokens at the best rate during our exclusive launchpad event.</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="stat-card p-3 mb-3">
+                                <h5>Exchange Rate</h5>
+                                <p class="h4 mb-0">1 ETH = 1,000 YTK</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stat-card p-3 mb-3">
+                                <h5>Hard Cap</h5>
+                                <p class="h4 mb-0">10 ETH</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="text-center">
+                        <div class="token-icon mx-auto mb-3" style="width: 150px; height: 150px; font-size: 60px;">
+                            YTK
+                        </div>
+                        <h3>YourToken</h3>
+                        <p class="text-light">The next generation DeFi token</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <!-- Wallet Status -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="alert alert-info alert-custom" id="walletStatus" style="display: none;">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <span id="walletStatusText">Please connect your wallet to participate</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sale Progress -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card card-custom">
+                    <div class="card-body p-4">
+                        <h3>Sale Progress</h3>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="progress progress-custom mb-3">
+                                    <div class="progress-bar bg-success" role="progressbar" id="progressBar" style="width: 0%">
+                                        <span id="progressText">0%</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span><strong id="totalRaised">0</strong> ETH raised</span>
+                                    <span><strong>10</strong> ETH goal</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-center">
+                                    <h5>Sale Status</h5>
+                                    <div id="saleStatus" class="badge bg-secondary fs-6 p-2">Loading...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Countdown Timer -->
+        <div class="row mb-5" id="countdownSection" style="display: none;">
+            <div class="col-12">
+                <div class="card card-custom text-center">
+                    <div class="card-body">
+                        <h3>Sale Starts In</h3>
+                        <div class="countdown" id="countdown">00:00:00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Purchase Section -->
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card card-custom">
+                    <div class="card-body p-4">
+                        <h3 class="mb-4">Buy YTK Tokens</h3>
+                        
+                        <div class="mb-3">
+                            <label for="ethAmount" class="form-label">ETH Amount</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="ethAmount" placeholder="0.0" step="0.001" min="0">
+                                <span class="input-group-text">ETH</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">You will receive</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="tokenAmount" readonly placeholder="0">
+                                <span class="input-group-text">YTK</span>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-success btn-custom w-100" id="buyTokensBtn" disabled>
+                            <span class="loading spinner-border spinner-border-sm me-2" role="status"></span>
+                            Buy Tokens
+                        </button>
+                        
+                        <div class="mt-3">
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Rate: 1 ETH = 1,000 YTK
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="card card-custom">
+                    <div class="card-body p-4">
+                        <h3 class="mb-4">Your Holdings</h3>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <span>YTK Balance:</span>
+                                <strong id="ytkBalance">0 YTK</strong>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <span>ETH Balance:</span>
+                                <strong id="ethBalance">0 ETH</strong>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <span>Your Contribution:</span>
+                                <strong id="contribution">0 ETH</strong>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <span>Contract Address:</span>
+                                <small id="contractAddress" class="text-muted">Not connected</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <span>Your Address:</span>
+                                <small id="userAddress" class="text-muted">Not connected</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card card-custom">
+                    <div class="card-body">
+                        <h3 class="mb-4">Recent Transactions</h3>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Transaction Hash</th>
+                                        <th>From</th>
+                                        <th>ETH Amount</th>
+                                        <th>YTK Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transactionList">
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">No transactions yet</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="gradient-bg py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>YTK Launchpad</h5>
+                    <p class="mb-0">Secure, transparent, and decentralized token sales.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">Built with ❤️ using Hardhat & Bootstrap</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/your-font-awesome-kit.js" crossorigin="anonymous"></script>
+      <!-- Ethers.js -->
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
+    
+    <!-- Config -->
+    <script src="config.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="app.js"></script>
+</body>
+</html>
