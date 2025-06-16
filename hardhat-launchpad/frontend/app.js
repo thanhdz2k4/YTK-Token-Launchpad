@@ -1,9 +1,25 @@
 (function() {
 'use strict';
 
-// Contract addresses - Update these with your deployed contracts
-const LAUNCHPAD_ADDRESS = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
-const TOKEN_ADDRESS = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
+// Network Configuration
+const NETWORK_CONFIG = {
+    chainId: '0xaa36a7', // Sepolia testnet
+    chainName: 'Sepolia Test Network',
+    nativeCurrency: {
+        name: 'ETH',
+        symbol: 'ETH',
+        decimals: 18
+    },
+    rpcUrls: ['https://sepolia.infura.io/v3/'],
+    blockExplorerUrls: ['https://sepolia.etherscan.io/']
+};
+
+// Contract addresses for Sepolia testnet (update after deployment)
+let LAUNCHPAD_ADDRESS = "0x0000000000000000000000000000000000000000";
+let TOKEN_ADDRESS = "0x0000000000000000000000000000000000000000";
+
+// Test mode - set to true for testing without deployed contracts
+const TEST_MODE = true;
 
 // Contract ABIs
 const LAUNCHPAD_ABI = [
@@ -130,19 +146,86 @@ async function connectWallet() {
             const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
             console.log('Accounts received:', accounts);
             
+            // Check if on correct network
+            const isCorrectNetwork = await checkNetwork();
+            if (!isCorrectNetwork) {
+                await switchNetwork();
+                // Check again after switch
+                const isCorrectAfterSwitch = await checkNetwork();
+                if (!isCorrectAfterSwitch) {
+                    showAlert('Please manually switch to Sepolia testnet', 'warning');
+                    return;
+                }
+            }
+            
+            // Check if contracts are deployed
+            if (LAUNCHPAD_ADDRESS === "0x0000000000000000000000000000000000000000") {
+                showAlert('Contracts not deployed yet. Please deploy contracts first.', 'warning');
+                return;
+            }
+            
             await initializeContracts();
             await updateUI();
             
             showAlert('Wallet connected successfully!', 'success');
         } catch (error) {
             console.error('Error connecting wallet:', error);
-            showAlert('Failed to connect wallet', 'danger');
+            showAlert('Failed to connect wallet: ' + error.message, 'danger');
         } finally {
             showLoading(connectWalletBtn, false);
         }
     } else {
         console.log('MetaMask not detected');
         showAlert('Please install MetaMask', 'warning');
+    }
+}
+
+// Check if user is on correct network
+async function checkNetwork() {
+    if (typeof window.ethereum !== 'undefined') {
+        try {
+            const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+            console.log('Current chainId:', chainId);
+            console.log('Expected chainId:', NETWORK_CONFIG.chainId);
+            
+            if (chainId !== NETWORK_CONFIG.chainId) {
+                showAlert(`Please switch to ${NETWORK_CONFIG.chainName}`, 'warning');
+                return false;
+            }
+            return true;
+        } catch (error) {
+            console.error('Error checking network:', error);
+            return false;
+        }
+    }
+    return false;
+}
+
+// Switch to correct network
+async function switchNetwork() {
+    if (typeof window.ethereum !== 'undefined') {
+        try {
+            await window.ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: NETWORK_CONFIG.chainId }],
+            });
+        } catch (switchError) {
+            // This error code indicates that the chain has not been added to MetaMask
+            if (switchError.code === 4902) {
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_addEthereumChain',
+                        params: [NETWORK_CONFIG],
+                    });
+                } catch (addError) {
+                    console.error('Error adding network:', addError);
+                    showAlert('Failed to add network', 'danger');
+                }
+            } else {
+                console.error('Error switching network:', switchError);
+                showAlert('Failed to switch network', 'danger');
+            }
+        }
     }
 }
 
@@ -154,9 +237,38 @@ async function initializeContracts() {
         signer = provider.getSigner();
         userAddress = await signer.getAddress();
         
+        // Get network info
+        const network = await provider.getNetwork();
+        console.log('Connected to network:', network);
+        
+        // Update contract addresses based on network
+        if (network.chainId === 1337 || network.chainId === 31337) {
+            // Local Hardhat network
+            LAUNCHPAD_ADDRESS = LAUNCHPAD_ADDRESS_LOCAL;
+            TOKEN_ADDRESS = TOKEN_ADDRESS_LOCAL;
+            console.log('Using local contract addresses');
+        } else {
+            // Other networks - update addresses as needed
+            LAUNCHPAD_ADDRESS = LAUNCHPAD_ADDRESS_TESTNET;
+            TOKEN_ADDRESS = TOKEN_ADDRESS_TESTNET;
+            console.log('Using testnet contract addresses');
+        }
+        
+        console.log('Launchpad Address:', LAUNCHPAD_ADDRESS);
+        console.log('Token Address:', TOKEN_ADDRESS);
+        
         // Initialize contracts
         launchpadContract = new ethers.Contract(LAUNCHPAD_ADDRESS, LAUNCHPAD_ABI, signer);
         tokenContract = new ethers.Contract(TOKEN_ADDRESS, TOKEN_ABI, signer);
+        
+        // Test contract connection
+        try {
+            const owner = await launchpadContract.owner();
+            console.log('Contract owner:', owner);
+        } catch (contractError) {
+            console.error('Contract connection test failed:', contractError);
+            throw new Error('Failed to connect to smart contract. Please check if contracts are deployed on this network.');
+        }
         
         // Setup event listeners for contract events
         setupContractEventListeners();
@@ -164,6 +276,7 @@ async function initializeContracts() {
         console.log('Contracts initialized successfully');
     } catch (error) {
         console.error('Error initializing contracts:', error);
+        showAlert(`Contract initialization failed: ${error.message}`, 'danger');
         throw error;
     }
 }
@@ -193,25 +306,39 @@ async function updateUI() {
         // Update contract addresses
         contractAddressSpan.textContent = `${LAUNCHPAD_ADDRESS.slice(0, 10)}...${LAUNCHPAD_ADDRESS.slice(-8)}`;
         userAddressSpan.textContent = `${userAddress.slice(0, 10)}...${userAddress.slice(-8)}`;
+          // Get contract data with individual error handling
+        let totalRaised, hardCap, startTime, endTime, userContribution, userTokenBalance, userEthBalance;
         
-        // Get contract data
-        const [
-            totalRaised,
-            hardCap,
-            startTime,
-            endTime,
-            userContribution,
-            userTokenBalance,
-            userEthBalance
-        ] = await Promise.all([
-            launchpadContract.totalRaised(),
-            launchpadContract.hardCap(),
-            launchpadContract.startTime(),
-            launchpadContract.endTime(),
-            launchpadContract.contributions(userAddress),
-            tokenContract.balanceOf(userAddress),
-            provider.getBalance(userAddress)
-        ]);
+        try {
+            console.log('Fetching contract data...');
+            
+            // Test each contract call individually
+            totalRaised = await launchpadContract.totalRaised();
+            console.log('✓ totalRaised:', totalRaised.toString());
+            
+            hardCap = await launchpadContract.hardCap();
+            console.log('✓ hardCap:', hardCap.toString());
+            
+            startTime = await launchpadContract.startTime();
+            console.log('✓ startTime:', startTime.toString());
+            
+            endTime = await launchpadContract.endTime();
+            console.log('✓ endTime:', endTime.toString());
+            
+            userContribution = await launchpadContract.contributions(userAddress);
+            console.log('✓ userContribution:', userContribution.toString());
+            
+            userTokenBalance = await tokenContract.balanceOf(userAddress);
+            console.log('✓ userTokenBalance:', userTokenBalance.toString());
+            
+            userEthBalance = await provider.getBalance(userAddress);
+            console.log('✓ userEthBalance:', userEthBalance.toString());
+            
+        } catch (contractCallError) {
+            console.error('Contract call failed:', contractCallError);
+            showAlert(`Failed to fetch contract data: ${contractCallError.message}`, 'danger');
+            return;
+        }
         
         // Update progress bar
         const progress = (parseFloat(ethers.utils.formatEther(totalRaised)) / parseFloat(ethers.utils.formatEther(hardCap))) * 100;
