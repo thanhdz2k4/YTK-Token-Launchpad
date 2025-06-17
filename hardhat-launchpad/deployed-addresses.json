@@ -1,0 +1,8 @@
+{
+  "network": "sepolia-mock",
+  "token": "0x1234567890123456789012345678901234567890",
+  "launchpad": "0x0987654321098765432109876543210987654321",
+  "deployer": "0xa17a600e32B008e8f8e4A615BBc6eFA0ecD73057",
+  "timestamp": "2025-06-16T04:42:19.285Z",
+  "note": "Mock addresses for testing - not real deployed contracts"
+}

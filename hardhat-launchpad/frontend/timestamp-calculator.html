@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timestamp Calculator for Launchpad</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .result {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        input, select {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 200px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Launchpad Timestamp Calculator</h1>
+        
+        <h3>Tự động tính timestamp cho Remix deployment</h3>
+        
+        <div>
+            <label>Thời gian bán (ngày): </label>
+            <input type="number" id="duration" value="7" min="1" max="365">
+            
+            <label>Bắt đầu sau (phút): </label>
+            <input type="number" id="startDelay" value="1" min="1" max="60">
+        </div>
+        
+        <button onclick="calculateTimestamps()">Tính Timestamp</button>
+        
+        <div id="results"></div>
+        
+        <h3>📋 Hướng dẫn deploy trong Remix:</h3>
+        <ol>
+            <li><strong>Deploy YourTokenSimple</strong> - không cần parameter</li>
+            <li><strong>Deploy LaunchpadAuto</strong> với parameters:</li>
+            <ul>
+                <li><code>_token</code>: [địa chỉ YourTokenSimple]</li>
+                <li><code>_rate</code>: <span id="rateValue">1000</span></li>
+                <li><code>_durationInDays</code>: <span id="durationValue">7</span></li>
+                <li><code>_hardCapInEth</code>: <span id="hardCapValue">10</span></li>
+            </ul>
+            <li><strong>Transfer tokens</strong> từ YourTokenSimple tới LaunchpadAuto</li>
+        </ol>
+    </div>
+
+    <script>
+        function calculateTimestamps() {
+            const now = Math.floor(Date.now() / 1000);
+            const duration = parseInt(document.getElementById('duration').value) || 7;
+            const startDelay = parseInt(document.getElementById('startDelay').value) || 1;
+            
+            const startTime = now + (startDelay * 60);
+            const endTime = startTime + (duration * 24 * 60 * 60);
+            
+            document.getElementById('durationValue').textContent = duration;
+            
+            const results = `
+                <div class="result">
+                    <strong>Current Timestamp:</strong> ${now}<br>
+                    <strong>Start Time:</strong> ${startTime} (${new Date(startTime * 1000).toLocaleString()})<br>
+                    <strong>End Time:</strong> ${endTime} (${new Date(endTime * 1000).toLocaleString()})<br>
+                    <strong>Duration:</strong> ${duration} ngày
+                </div>
+                
+                <div class="result">
+                    <strong>🔥 LaunchpadAuto Parameters (copy vào Remix):</strong><br>
+                    <code>_token</code>: [YourTokenSimple address]<br>
+                    <code>_rate</code>: 1000<br>
+                    <code>_durationInDays</code>: ${duration}<br>
+                    <code>_hardCapInEth</code>: 10
+                </div>
+                
+                <div class="result">
+                    <strong>⚡ Hoặc dùng Launchpad gốc với parameters:</strong><br>
+                    <code>_token</code>: [YourTokenSimple address]<br>
+                    <code>_rate</code>: 1000<br>
+                    <code>_startTime</code>: ${startTime}<br>
+                    <code>_endTime</code>: ${endTime}<br>
+                    <code>_hardCap</code>: 10000000000000000000
+                </div>
+            `;
+            
+            document.getElementById('results').innerHTML = results;
+        }
+        
+        // Tự động tính khi load trang
+        calculateTimestamps();
+        
+        // Auto refresh mỗi 10 giây
+        setInterval(calculateTimestamps, 10000);
+    </script>
+</body>
+</html>
