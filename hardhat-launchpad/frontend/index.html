@@ -89,6 +89,27 @@
             font-weight: bold;
             color: #28a745;
         }
+        
+        .countdown-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .countdown {
+            font-family: 'Courier New', monospace;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00d4ff;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+            margin-top: 5px;
+        }
+
+        .countdown.expired {
+            color: #ff6b6b;
+            text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+        }
     </style>
 </head>
 <body>
@@ -171,11 +192,14 @@
                                     <span><strong id="totalRaised">0</strong> ETH raised</span>
                                     <span><strong>10</strong> ETH goal</span>
                                 </div>
-                            </div>
-                            <div class="col-md-4">
+                            </div>                            <div class="col-md-4">
                                 <div class="text-center">
                                     <h5>Sale Status</h5>
-                                    <div id="saleStatus" class="badge bg-secondary fs-6 p-2">Loading...</div>
+                                    <div id="saleStatus" class="badge bg-secondary fs-6 p-2 mb-2">Loading...</div>
+                                    <div class="countdown-container mt-2">
+                                        <small class="text-muted d-block">Time Remaining</small>
+                                        <div class="countdown" id="countdown">00:00:00</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -185,16 +209,16 @@
         </div>
 
         <!-- Countdown Timer -->
-        <div class="row mb-5" id="countdownSection" style="display: none;">
+        <!-- <div class="row mb-5" id="countdownSection" >
             <div class="col-12">
                 <div class="card card-custom text-center">
                     <div class="card-body">
                         <h3>Sale Starts In</h3>
-                        <div class="countdown" id="countdown">00:00:00</div>
+                        
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <!-- Purchase Section -->
         <div class="row">

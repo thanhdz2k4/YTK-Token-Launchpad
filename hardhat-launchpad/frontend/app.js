@@ -609,9 +609,11 @@ async function initializeContracts() {
                 throw new Error(`Failed to connect to smart contract: ${contractError.message}`);
             }
         }
-        
-        // Setup event listeners for contract events
+          // Setup event listeners for contract events
         setupContractEventListeners();
+        
+        // Start countdown timer
+        startCountdownTimer();
         
         console.log('Contracts initialized successfully');
     } catch (error) {
@@ -736,7 +738,7 @@ async function updateUI() {
         contributionSpan.textContent = `${parseFloat(ethers.utils.formatEther(userContribution)).toFixed(4)} ETH`;
         
         // Update sale status and countdown
-        updateSaleStatus(startTime.toNumber(), endTime.toNumber());
+        updateSaleStatus();
         
     } catch (error) {
         console.error('Error updating UI:', error);
@@ -791,11 +793,13 @@ async function updateUIWithWalletOnly() {
         // Enable ETH amount input
         ethAmountInput.disabled = false;
         ethAmountInput.placeholder = 'Enter ETH amount (demo only)';
-        
-        console.log('✅ Real wallet data loaded:');
+          console.log('✅ Real wallet data loaded:');
         console.log('  - Address:', userAddress);
         console.log('  - ETH Balance:', ethBalanceFormatted);
         console.log('  - Network:', network.name);
+        
+        // Start countdown timer for demo mode too
+        startCountdownTimer();
         
     } catch (error) {
         console.error('Error updating UI with wallet data:', error);
@@ -804,34 +808,214 @@ async function updateUIWithWalletOnly() {
 }
 
 // Update sale status and countdown
-function updateSaleStatus(startTime, endTime) {
-    const now = Math.floor(Date.now() / 1000);
+function updateSaleStatus() {
+    try {
+        console.log("🕐 Updating sale status and countdown...");
+        
+        // Get current timestamp
+        const now = Math.floor(Date.now() / 1000);
+        
+        if (launchpadContract) {
+            // Try to get real times from contract (but don't wait for it every second)
+            if (!window.cachedTimeInfo || (now - window.lastTimeUpdate) > 60) {
+                // Only fetch from contract every 60 seconds to avoid delays
+                console.log("📡 Fetching fresh time info from contract...");
+                launchpadContract.getTimeInfo().then(timeInfo => {
+                    window.cachedTimeInfo = {
+                        currentTime: parseInt(timeInfo.currentTime),
+                        saleStart: parseInt(timeInfo.saleStart),
+                        saleEnd: parseInt(timeInfo.saleEnd),
+                        isActive: timeInfo.isActive
+                    };
+                    window.lastTimeUpdate = now;
+                    
+                    console.log("📊 Contract time info cached:");
+                    console.log("  Current:", new Date(window.cachedTimeInfo.currentTime * 1000).toLocaleString());
+                    console.log("  Start:", new Date(window.cachedTimeInfo.saleStart * 1000).toLocaleString());
+                    console.log("  End:", new Date(window.cachedTimeInfo.saleEnd * 1000).toLocaleString());
+                    console.log("  Is Active:", window.cachedTimeInfo.isActive);
+                }).catch(error => {
+                    console.log("⚠️ Contract call failed, using demo times:", error.message);
+                    setupDemoTimeInfo(now);
+                });
+            }
+            
+            // Use cached info for real-time updates
+            if (window.cachedTimeInfo) {
+                // Calculate time offset from when we last got contract time
+                const timeOffset = now - window.lastTimeUpdate;
+                const currentTime = window.cachedTimeInfo.currentTime + timeOffset;
+                
+                updateCountdownAndStatus(currentTime, window.cachedTimeInfo.saleStart, window.cachedTimeInfo.saleEnd, window.cachedTimeInfo.isActive);
+            } else {
+                // Fallback while waiting for first contract call
+                setupDemoTimeInfo(now);
+                updateCountdownAndStatus(now, window.demoTimeInfo.saleStart, window.demoTimeInfo.saleEnd, window.demoTimeInfo.isActive);
+            }
+        } else {
+            console.log("📊 No contract, using demo times");
+            setupDemoTimeInfo(now);
+            updateCountdownAndStatus(now, window.demoTimeInfo.saleStart, window.demoTimeInfo.saleEnd, window.demoTimeInfo.isActive);
+        }
+    } catch (error) {
+        console.error("❌ Error in updateSaleStatus:", error);
+        // Fallback display
+        const saleStatusElement = document.getElementById('saleStatus');
+        const countdownElement = document.getElementById('countdown');
+        
+        if (saleStatusElement) {
+            saleStatusElement.textContent = "Demo Mode";
+            saleStatusElement.className = "badge bg-warning fs-6 p-2 mb-2";
+        }
+        if (countdownElement) {
+            countdownElement.textContent = "Demo Mode";
+        }
+    }
+}
+
+function setupDemoTimeInfo(now) {
+    if (!window.demoTimeInfo) {
+        window.demoTimeInfo = {
+            saleStart: now - 3600, // Started 1 hour ago
+            saleEnd: now + (7 * 24 * 3600), // Ends in 7 days
+            isActive: true
+        };
+        console.log("📊 Demo time info setup");
+    }
+}
+function updateCountdownAndStatus(currentTime, startTime, endTime, isActive) {
+    // Only log every 10 seconds to reduce spam
+    const logNow = Math.floor(Date.now() / 1000) % 10 === 0;
     
-    if (now < startTime) {
-        // Sale hasn't started
-        saleStatusDiv.textContent = 'Upcoming';
-        saleStatusDiv.className = 'badge bg-warning fs-6 p-2';
-        buyTokensBtn.disabled = true;
+    if (logNow) {
+        console.log("🔄 updateCountdownAndStatus called with:");
+        console.log("  currentTime:", currentTime, "->", new Date(currentTime * 1000).toLocaleString());
+        console.log("  startTime:", startTime, "->", new Date(startTime * 1000).toLocaleString());
+        console.log("  endTime:", endTime, "->", new Date(endTime * 1000).toLocaleString());
+        console.log("  isActive:", isActive);
+    }
+    
+    const saleStatusElement = document.getElementById('saleStatus');
+    const countdownElement = document.getElementById('countdown');
+    
+    if (!saleStatusElement || !countdownElement) {
+        console.error("❌ Status elements not found!");
+        return;
+    }
+    
+    // Calculate time differences
+    const timeToStart = startTime - currentTime;
+    const timeToEnd = endTime - currentTime;
+    
+    if (logNow) {
+        console.log("⏰ Time calculations:");
+        console.log("  timeToStart:", timeToStart, "seconds");
+        console.log("  timeToEnd:", timeToEnd, "seconds");
+    }
+    
+    if (timeToStart > 0) {
+        // Sale hasn't started yet
+        if (logNow) console.log("📅 Sale hasn't started yet");
+        saleStatusElement.textContent = "Sale Not Started";
+        saleStatusElement.className = "badge bg-warning fs-6 p-2 mb-2";
         
-        // Show countdown
-        countdownSection.style.display = 'block';
-        startCountdown(startTime);
+        // Show countdown to start
+        const timeString = formatTimeRemaining(timeToStart);
+        countdownElement.textContent = `Starts in: ${timeString}`;
+        countdownElement.className = "countdown";
         
-    } else if (now >= startTime && now <= endTime) {
+    } else if (timeToEnd > 0 && isActive) {
         // Sale is active
-        saleStatusDiv.textContent = 'Active';
-        saleStatusDiv.className = 'badge bg-success fs-6 p-2';
-        buyTokensBtn.disabled = false;
-        countdownSection.style.display = 'none';
+        if (logNow) console.log("🟢 Sale is active");
+        saleStatusElement.textContent = "Sale Active";
+        saleStatusElement.className = "badge bg-success fs-6 p-2 mb-2";
+        
+        // Show countdown to end
+        const timeString = formatTimeRemaining(timeToEnd);
+        countdownElement.textContent = timeString;
+        countdownElement.className = "countdown";
         
     } else {
         // Sale has ended
-        saleStatusDiv.textContent = 'Ended';
-        saleStatusDiv.className = 'badge bg-danger fs-6 p-2';
-        buyTokensBtn.disabled = true;
-        countdownSection.style.display = 'none';
+        if (logNow) console.log("🔴 Sale has ended");
+        saleStatusElement.textContent = "Sale Ended";
+        saleStatusElement.className = "badge bg-danger fs-6 p-2 mb-2";
+        
+        countdownElement.textContent = "EXPIRED";
+        countdownElement.className = "countdown expired";
     }
 }
+
+function formatTimeRemaining(seconds) {
+    if (seconds <= 0) return "00:00:00";
+    
+    const days = Math.floor(seconds / (24 * 3600));
+    const hours = Math.floor((seconds % (24 * 3600)) / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    
+    let result;
+    if (days > 0) {
+        result = `${days}d ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    } else {
+        result = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    
+    return result;
+}
+
+// Update countdown every second
+let countdownInterval;
+
+function startCountdownTimer() {
+    console.log("🚀 startCountdownTimer() called");
+    
+    // Clear existing interval
+    if (countdownInterval) {
+        console.log("⏹️ Clearing existing countdown interval");
+        clearInterval(countdownInterval);
+    }
+    
+    // Check if elements exist
+    const saleStatusElement = document.getElementById('saleStatus');
+    const countdownElement = document.getElementById('countdown');
+    console.log("📱 Elements check in startCountdownTimer:");
+    console.log("  saleStatus exists:", !!saleStatusElement);
+    console.log("  countdown exists:", !!countdownElement);
+    
+    if (!saleStatusElement || !countdownElement) {
+        console.error("❌ Required elements not found, cannot start timer");
+        return;
+    }
+    
+    // Reset cache
+    window.cachedTimeInfo = null;
+    window.lastTimeUpdate = 0;
+    
+    // Update immediately
+    console.log("⚡ Calling updateSaleStatus immediately");
+    updateSaleStatus();
+    
+    // Update every second
+    countdownInterval = setInterval(() => {
+        // Only log every 10 seconds to reduce spam
+        if (Math.floor(Date.now() / 1000) % 10 === 0) {
+            console.log("⏰ Timer tick (10s interval log)");
+        }
+        updateSaleStatus();
+    }, 1000);
+    
+    console.log("✅ Countdown timer started successfully");
+}
+
+function stopCountdownTimer() {
+    if (countdownInterval) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+        console.log("⏰ Countdown timer stopped");
+    }
+}
+
 
 // Start countdown timer
 function startCountdown(targetTime) {
@@ -1168,5 +1352,37 @@ if (window.ethereum) {
         location.reload();
     });
 }
+
+// Test countdown immediately when page loads
+function testCountdown() {
+    console.log("🧪 Testing countdown elements...");
+    
+    const saleStatusElement = document.getElementById('saleStatus');
+    const countdownElement = document.getElementById('countdown');
+    
+    console.log("Elements found:");
+    console.log("  saleStatus:", saleStatusElement);
+    console.log("  countdown:", countdownElement);
+    
+    if (saleStatusElement) {
+        console.log("✅ saleStatus element exists");
+    } else {
+        console.error("❌ saleStatus element NOT found");
+    }
+    
+    if (countdownElement) {
+        console.log("✅ countdown element exists");
+    } else {
+        console.error("❌ countdown element NOT found");
+    }
+    
+    // DON'T override the countdown text, just test that elements exist
+    console.log("🔄 Elements tested, ready for real countdown");
+}
+
+// Call test immediately
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(testCountdown, 500); // Test after 500ms
+});
 
 })(); // Close IIFE
