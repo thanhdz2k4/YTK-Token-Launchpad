@@ -110,6 +110,241 @@
             color: #ff6b6b;
             text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
         }
+
+        /* Equal height cards */
+        .purchase-section .card {
+            height: 100%;
+        }
+
+        .purchase-section .card-body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Balance Display Styles */
+        .balance-display {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .balance-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+        }
+
+        .balance-item:not(:last-child) {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 0.5rem;
+            padding-bottom: 1rem;
+        }
+
+        .balance-label {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+        }
+
+        .balance-value {
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* Send Modal Styles */
+        .send-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1050;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .send-modal.show {
+            opacity: 1;
+        }
+
+        .send-modal-content {
+            background: linear-gradient(135deg, rgba(26, 27, 46, 0.95), rgba(22, 33, 62, 0.95));
+            border: 1px solid rgba(57, 208, 216, 0.3);
+            border-radius: 16px;
+            padding: 0;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 60px rgba(57, 208, 216, 0.2);
+        }
+
+        .send-modal.show .send-modal-content {
+            transform: translateY(0);
+        }
+
+        .send-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .send-modal-header h5 {
+            color: #39d0d8;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .btn-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #39d0d8;
+        }
+
+        .btn-close::before {
+            content: "×";
+            font-size: 1.8rem;
+            line-height: 1;
+        }
+
+        .send-modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-control-custom {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control-custom:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #39d0d8;
+            box-shadow: 0 0 0 0.2rem rgba(57, 208, 216, 0.25);
+            color: #fff;
+        }
+
+        .form-control-custom::placeholder {
+            color: #a0a0a0;
+        }
+
+        .form-control-custom.is-invalid {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        }
+
+        .form-label {
+            color: #fff;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-text {
+            color: #a0a0a0;
+            font-size: 0.85rem;
+        }
+
+        .input-group .btn-outline-secondary {
+            background: rgba(57, 208, 216, 0.1);
+            border-color: rgba(57, 208, 216, 0.3);
+            color: #39d0d8;
+            font-weight: 600;
+        }
+
+        .input-group .btn-outline-secondary:hover {
+            background: rgba(57, 208, 216, 0.2);
+            border-color: #39d0d8;
+            color: #fff;
+        }
+
+        .send-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn-send {
+            background: linear-gradient(135deg, #39d0d8, #7209b7);
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .btn-send:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(57, 208, 216, 0.3);
+        }
+
+        .btn-send:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-clear {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .btn-clear:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: #fff;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .send-actions {
+                flex-direction: column;
+            }
+            
+            .balance-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.25rem;
+            }
+            
+            .send-modal-content {
+                width: 95%;
+                margin: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -302,10 +537,86 @@
                                 <small id="userAddress" class="text-muted">Not connected</small>
                             </div>
                         </div>
+
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <div class="mt-auto">
+                                    <button type="button" class="btn btn-outline-primary w-100" id="showSendFormBtn">
+                                        <i class="fas fa-paper-plane me-2"></i>Send YTK Tokens
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+ 
+        <!-- Send Tokens Modal -->
+        <div class="send-modal" id="sendModal" style="display: none;">
+    <div class="send-modal-content">
+        <div class="send-modal-header">
+            <h5 class="mb-0">
+                <i class="fas fa-paper-plane me-2"></i>Send YTK Tokens
+            </h5>
+            <button type="button" class="btn-close" id="closeSendModal"></button>
+        </div>
+        <div class="send-modal-body">
+            <div class="form-group mb-3">
+                <label for="sendToAddress" class="form-label">
+                    <i class="fas fa-user me-1"></i>Recipient Address
+                </label>
+                <input 
+                    type="text" 
+                    class="form-control form-control-custom" 
+                    id="sendToAddressInput" 
+                    placeholder="0x..."
+                    maxlength="42"
+                >
+                <div class="form-text">Enter the recipient's wallet address</div>
+            </div>
+            
+            <div class="form-group mb-3">
+                <label for="sendAmount" class="form-label">
+                    <i class="fas fa-coins me-1"></i>Amount (YTK)
+                </label>
+                <div class="input-group">
+                    <input 
+                        type="number" 
+                        class="form-control form-control-custom" 
+                        id="sendAmountInput" 
+                        placeholder="0.00"
+                        min="0"
+                        step="0.01"
+                    >
+                    <button class="btn btn-outline-secondary" type="button" id="maxAmountBtn">
+                        MAX
+                    </button>
+                </div>
+                <div class="form-text">Available: <span id="availableBalance">0.00 YTK</span></div>
+                <div class="form-text text-danger" id="sendError" >
+                    <i class="fas fa-exclamation-triangle me-1"></i>
+                    <span id="sendErrorTextSendToken"></span>
+                </div>
+                <div class="form-text text-success" id="sendSuccess">
+                    <i class="fas fa-check-circle me-1"></i>
+                    <span id="sendSuccessText"></span>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="send-actions">
+                <button type="button" class="btn btn-primary btn-send" id="sendTokensBtn" disabled>
+                    <i class="fas fa-paper-plane me-2"></i>
+                    <span class="btn-text">Send Tokens</span>
+                </button>
+                <button type="button" class="btn btn-secondary btn-clear" id="clearFormBtn">
+                    <i class="fas fa-times me-2"></i>Clear
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
         <!-- Recent Transactions -->
         <div class="row mt-5">

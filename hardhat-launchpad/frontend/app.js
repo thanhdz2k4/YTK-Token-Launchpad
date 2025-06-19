@@ -378,13 +378,319 @@ const LAUNCHPAD_ABI = [
 ];
 
 const TOKEN_ABI = [
-    "function name() view returns (string)",
-    "function symbol() view returns (string)",
-    "function decimals() view returns (uint8)",
-    "function totalSupply() view returns (uint256)",
-    "function balanceOf(address) view returns (uint256)",
-    "function transfer(address to, uint256 amount) returns (bool)",
-    "event Transfer(address indexed from, address indexed to, uint256 value)"
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "spender",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "allowance",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "needed",
+				"type": "uint256"
+			}
+		],
+		"name": "ERC20InsufficientAllowance",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "balance",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "needed",
+				"type": "uint256"
+			}
+		],
+		"name": "ERC20InsufficientBalance",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "approver",
+				"type": "address"
+			}
+		],
+		"name": "ERC20InvalidApprover",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "receiver",
+				"type": "address"
+			}
+		],
+		"name": "ERC20InvalidReceiver",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			}
+		],
+		"name": "ERC20InvalidSender",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "spender",
+				"type": "address"
+			}
+		],
+		"name": "ERC20InvalidSpender",
+		"type": "error"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "spender",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "Approval",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "Transfer",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "spender",
+				"type": "address"
+			}
+		],
+		"name": "allowance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "spender",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "approve",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "balanceOf",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "decimals",
+		"outputs": [
+			{
+				"internalType": "uint8",
+				"name": "",
+				"type": "uint8"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "name",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "symbol",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "totalSupply",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "transfer",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "transferFrom",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
 ];
 
 // Global variables
@@ -414,12 +720,29 @@ const contractAddressSpan = document.getElementById('contractAddress');
 const userAddressSpan = document.getElementById('userAddress');
 const transactionList = document.getElementById('transactionList');
 
+// Send modal variables (will be initialized in DOMContentLoaded)
+let showSendFormBtn, sendModal, sendTokensBtn, sendToAddressInput, sendAmountInput, sendErrorTextSendToken, sendSuccessText;
+
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
-  
+    console.log('🚀 DOM Content Loaded - Starting initialization...');
+    
+    // Initialize send modal elements
+    showSendFormBtn = document.getElementById('showSendFormBtn');
+    sendModal = document.getElementById('sendModal');
+    sendTokensBtn = document.getElementById('sendTokensBtn');
+    sendToAddressInput = document.getElementById('sendToAddressInput');
+    sendAmountInput = document.getElementById('sendAmountInput');
+    sendErrorTextSendToken = document.getElementById('sendErrorTextSendToken');
+    sendSuccessText = document.getElementById('sendSuccessText');
+
+    console.log('🔍 Send form elements check:');
+    console.log('  - showSendFormBtn:', showSendFormBtn);
+    console.log('  - sendModal:', sendModal);
+    
     checkWalletConnection();
     setupEventListeners();
-    buyTokensBtn.disabled = false; // Disable until wallet is connected
+    buyTokensBtn.disabled = true; // Disable until wallet is connected
 
 });
 
@@ -434,9 +757,110 @@ function setupEventListeners() {
     } else {
         console.error('connectWalletBtn element not found!');
     }
-      ethAmountInput.addEventListener('input', calculateTokenAmount);
+    
+    ethAmountInput.addEventListener('input', calculateTokenAmount);
     buyTokensBtn.addEventListener('click', buyTokens);
     checkTokensBtn.addEventListener('click', checkContractTokens);
+      // Setup send form button
+    if (showSendFormBtn) {
+        showSendFormBtn.addEventListener('click', showSendFormTokenForm);
+        console.log('✅ Send form button event listener added');
+    } else {
+        console.error('❌ showSendFormBtn element not found!');
+    }
+    sendTokensBtn.addEventListener('click', sendTokens);
+
+    sendToAddressInput.addEventListener('input', handleInputSendTokenChange);
+    sendAmountInput.addEventListener('input', handleInputSendTokenChange);
+
+    // Setup send modal close events
+    setupSendModalEventListeners();
+}
+// 0xAfAF9562147d429FDBeF8386B4a6bFb5c622accA
+// handle input changes in send form
+    async function handleInputSendTokenChange() {
+    const toAddress = sendToAddressInput.value;
+
+    const amount = parseFloat(sendAmountInput.value) || 0;
+    let userTokenBalance = 0;
+    try 
+    {
+        userTokenBalance = await tokenContract.balanceOf(userAddress);
+    }
+    catch (error) {
+        console.error('Error fetching user token balance:', error);
+    }
+
+    if(amount > 0 && ethers.utils.isAddress(toAddress) && toAddress != userAddress) {
+        sendTokensBtn.disabled = false;
+    } else {
+        sendTokensBtn.disabled = true;
+    }
+
+    if(amount > parseFloat(ethers.utils.formatEther(userTokenBalance))) {
+        sendErrorTextSendToken.innerHTML = 'Insufficient token balance';
+        sendTokensBtn.disabled = true;
+    }
+    else {
+        sendErrorTextSendToken.innerHTML = '';
+    }
+}
+
+// send tokens 
+async function sendTokens() {
+
+    const toAddress = sendToAddressInput.value;
+    const amount = parseFloat(sendAmountInput.value);
+    
+    try {
+        showLoading(sendTokensBtn, true);
+        const tx = await tokenContract.transfer(toAddress, ethers.utils.parseEther(amount.toString()));
+        sendSuccessText.innerHTML = `Loading ...`;
+        showAlert(`Sending ${amount} tokens to ${toAddress}`, 'info');
+        await tx.wait();
+        sendSuccessText.innerHTML = `Successfully sent ${amount} tokens to ${toAddress}`;
+        showAlert(`Successfully sent ${amount} tokens to ${toAddress}`, 'success');
+        // Reset form
+        sendToAddressInput.value = '';
+        sendAmountInput.value = '';
+    } catch (error) {
+        sendErrorTextSendToken.innerHTML = `Failed to send tokens: ${error.message}`;
+        showAlert(`Failed to send tokens: ${error.message}`, 'danger'); 
+    } finally {
+        showLoading(sendTokensBtn, false);
+    }
+
+}
+
+// show send form
+function showSendFormTokenForm() {
+    console.log('🚀 showSendFormTokenForm() called');
+    console.log('🔍 Checking sendModal element:', sendModal);
+    
+    if (!sendModal) {
+        console.error('❌ sendModal element not found! Re-attempting to get element...');
+        sendModal = document.getElementById('sendModal');
+        console.log('🔍 Re-check sendModal:', sendModal);
+    }
+    
+    if (sendModal) {
+        console.log('✅ sendModal found, showing modal...');
+        sendModal.style.display = 'flex';
+        console.log('✅ Modal display set to flex');
+        
+        // Add animation class after a brief delay
+        setTimeout(() => {
+            sendModal.classList.add('show');
+            console.log('✅ Added show class for animation');
+        }, 10);
+        
+    } else {
+        console.error('❌ sendModal element still not found! Check if HTML contains element with id="sendModal"');
+        
+        // Debug: List all elements with send-related IDs
+        const allElements = document.querySelectorAll('[id*="send"], [id*="Send"], [id*="modal"], [id*="Modal"]');
+        console.log('🔍 Found elements with send/modal in ID:', allElements);
+    }
 }
 
 // Check if wallet is already connected
@@ -910,6 +1334,12 @@ function calculateTokenAmount() {
     const ethAmount = parseFloat(ethAmountInput.value) || 0;
     const tokenAmount = ethAmount * 1000; // Rate: 1 ETH = 1000 tokens
     tokenAmountInput.value = tokenAmount.toFixed(2);
+
+    if(ethAmount > 0) {
+        buyTokensBtn.disabled = false;
+    } else {
+        buyTokensBtn.disabled = true;
+    }
 }
 
 // Check contract status before transaction
@@ -1230,5 +1660,68 @@ function testCountdown() {
 document.addEventListener('DOMContentLoaded', function() {
     setTimeout(testCountdown, 500); // Test after 500ms
 });
+
+// Additional send modal functions
+function hideSendModal() {
+    console.log('🚀 hideSendModal() called');
+    if (sendModal) {
+        sendModal.classList.remove('show');
+        setTimeout(() => {
+            sendModal.style.display = 'none';
+            console.log('✅ Modal hidden');
+        }, 300); // Wait for animation
+    }
+}
+
+function setupSendModalEventListeners() {
+    console.log('🔧 Setting up send modal event listeners...');
+    
+    // Close button
+    const closeSendModalBtn = document.getElementById('closeSendModal');
+    if (closeSendModalBtn) {
+        closeSendModalBtn.addEventListener('click', hideSendModal);
+        console.log('✅ Close button event listener added');
+    } else {
+        console.log('❌ Close button not found');
+    }
+    
+    // Click outside to close
+    if (sendModal) {
+        sendModal.addEventListener('click', function(e) {
+            if (e.target === sendModal) {
+                hideSendModal();
+            }
+        });
+    }
+    
+    // Escape key to close
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && sendModal && sendModal.style.display !== 'none') {
+            hideSendModal();
+        }
+    });
+}
+
+// Test function to debug modal
+window.testShowModal = function() {
+    console.log('🧪 TEST: Manual modal show');
+    const modal = document.getElementById('sendModal');
+    console.log('  - Modal element:', modal);
+    if (modal) {
+        modal.style.display = 'flex';
+        modal.classList.add('show');
+        console.log('  - Modal should be visible now');
+    }
+};
+
+window.testHideModal = function() {
+    console.log('🧪 TEST: Manual modal hide');
+    const modal = document.getElementById('sendModal');
+    if (modal) {
+        modal.style.display = 'none';
+        modal.classList.remove('show');
+        console.log('  - Modal should be hidden now');
+    }
+};
 
 })(); // Close IIFE
