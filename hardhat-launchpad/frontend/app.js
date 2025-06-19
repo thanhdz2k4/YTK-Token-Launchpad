@@ -19,7 +19,7 @@ let LAUNCHPAD_ADDRESS = "0x96748C4718Bd81Ca418f5ec0A32dfc8a916e8Ae8"; // Your La
 let TOKEN_ADDRESS = "0xF34DF1B06875AB34Da7F5E4FFC79a1Dc07F3289a"; // Your YourTokenSimple contract
 
 // Test mode - set to false for real blockchain data
-const TEST_MODE = false;
+
 
 // Contract ABIs
 const LAUNCHPAD_ABI = [
@@ -407,8 +407,6 @@ const progressBar = document.getElementById('progressBar');
 const progressText = document.getElementById('progressText');
 const totalRaisedSpan = document.getElementById('totalRaised');
 const saleStatusDiv = document.getElementById('saleStatus');
-const countdownSection = document.getElementById('countdownSection');
-const countdownDiv = document.getElementById('countdown');
 const ytkBalanceSpan = document.getElementById('ytkBalance');
 const ethBalanceSpan = document.getElementById('ethBalance');
 const contributionSpan = document.getElementById('contribution');
@@ -418,27 +416,11 @@ const transactionList = document.getElementById('transactionList');
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOMContentLoaded event fired');
-    console.log('Document ready, checking elements...');
-    
-    // Check if all required elements exist
-    const elements = {
-        connectWalletBtn: document.getElementById('connectWallet'),
-        walletStatus: document.getElementById('walletStatus'),
-        ethAmountInput: document.getElementById('ethAmount'),
-        buyTokensBtn: document.getElementById('buyTokensBtn')
-    };
-    
-    Object.entries(elements).forEach(([name, element]) => {
-        if (element) {
-            console.log(`✓ ${name} found`);
-        } else {
-            console.error(`✗ ${name} NOT found`);
-        }
-    });
-    
+  
     checkWalletConnection();
     setupEventListeners();
+    buyTokensBtn.disabled = false; // Disable until wallet is connected
+
 });
 
 // Setup event listeners
@@ -522,54 +504,6 @@ async function connectWallet() {
     }
 }
 
-// Check if user is on correct network
-async function checkNetwork() {
-    if (typeof window.ethereum !== 'undefined') {
-        try {
-            const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-            console.log('Current chainId:', chainId);
-            console.log('Expected chainId:', NETWORK_CONFIG.chainId);
-            
-            if (chainId !== NETWORK_CONFIG.chainId) {
-                showAlert(`Please switch to ${NETWORK_CONFIG.chainName}`, 'warning');
-                return false;
-            }
-            return true;
-        } catch (error) {
-            console.error('Error checking network:', error);
-            return false;
-        }
-    }
-    return false;
-}
-
-// Switch to correct network
-async function switchNetwork() {
-    if (typeof window.ethereum !== 'undefined') {
-        try {
-            await window.ethereum.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: NETWORK_CONFIG.chainId }],
-            });
-        } catch (switchError) {
-            // This error code indicates that the chain has not been added to MetaMask
-            if (switchError.code === 4902) {
-                try {
-                    await window.ethereum.request({
-                        method: 'wallet_addEthereumChain',
-                        params: [NETWORK_CONFIG],
-                    });
-                } catch (addError) {
-                    console.error('Error adding network:', addError);
-                    showAlert('Failed to add network', 'danger');
-                }
-            } else {
-                console.error('Error switching network:', switchError);
-                showAlert('Failed to switch network', 'danger');
-            }
-        }
-    }
-}
 
 // Initialize contracts
 async function initializeContracts() {
@@ -636,50 +570,6 @@ function setupContractEventListeners() {
 // Update UI with current data
 async function updateUI() {
     try {
-        if (TEST_MODE) {
-            // Mock data for testing
-            console.log('Running in TEST MODE with mock data');
-            
-            // Update wallet status
-            connectWalletBtn.textContent = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
-            connectWalletBtn.disabled = true;
-            walletStatus.style.display = 'block';
-            walletStatusText.textContent = `Connected: ${userAddress} (TEST MODE)`;
-            walletStatus.className = 'alert alert-info alert-custom';
-            
-            // Update contract addresses
-            contractAddressSpan.textContent = `${LAUNCHPAD_ADDRESS.slice(0, 10)}...${LAUNCHPAD_ADDRESS.slice(-8)}`;
-            userAddressSpan.textContent = `${userAddress.slice(0, 10)}...${userAddress.slice(-8)}`;
-            
-            // Mock contract data
-            const mockTotalRaised = "2.5";
-            const mockProgress = 25;
-            
-            // Update progress bar
-            progressBar.style.width = `${mockProgress}%`;
-            progressText.textContent = `${mockProgress}%`;
-            totalRaisedSpan.textContent = mockTotalRaised;
-            
-            // Update balances (mock)
-            ytkBalanceSpan.textContent = `1,000.00 YTK`;
-            ethBalanceSpan.textContent = `0.5000 ETH`;
-            contributionSpan.textContent = `0.1000 ETH`;
-              // Mock sale status
-            saleStatusDiv.innerHTML = '<span class="badge bg-success">Sale Active (Mock)</span>';
-            
-            // Enable buy tokens button in test mode
-            buyTokensBtn.disabled = false;
-            buyTokensBtn.textContent = 'Buy Tokens (Test)';
-            
-            // Enable ETH amount input
-            ethAmountInput.disabled = false;
-            ethAmountInput.placeholder = 'Enter ETH amount (0.01 - 1.0)';
-            
-            console.log('✅ TEST MODE: UI updated with mock data, buy button enabled');
-            
-            return;
-        }
-        
         if (!launchpadContract || !tokenContract) return;
         
         // Update wallet status
@@ -757,7 +647,7 @@ async function updateUIWithWalletOnly() {
         walletStatus.style.display = 'block';
         walletStatusText.textContent = `Connected: ${userAddress} (Demo Mode)`;
         walletStatus.className = 'alert alert-warning alert-custom';
-        
+
         // Update contract addresses
         contractAddressSpan.textContent = `${LAUNCHPAD_ADDRESS.slice(0, 10)}...${LAUNCHPAD_ADDRESS.slice(-8)}`;
         userAddressSpan.textContent = `${userAddress.slice(0, 10)}...${userAddress.slice(-8)}`;
@@ -786,9 +676,6 @@ async function updateUIWithWalletOnly() {
         // Demo sale status
         saleStatusDiv.innerHTML = '<span class="badge bg-warning">Demo Mode - Contracts Not Found</span>';
         
-        // Enable buy tokens button but show warning
-        buyTokensBtn.disabled = false;
-        buyTokensBtn.textContent = 'Buy Tokens (Demo)';
         
         // Enable ETH amount input
         ethAmountInput.disabled = false;
@@ -1017,26 +904,6 @@ function stopCountdownTimer() {
 }
 
 
-// Start countdown timer
-function startCountdown(targetTime) {
-    const countdownTimer = setInterval(() => {
-        const now = Math.floor(Date.now() / 1000);
-        const timeLeft = targetTime - now;
-        
-        if (timeLeft <= 0) {
-            clearInterval(countdownTimer);
-            countdownDiv.textContent = 'Sale Started!';
-            updateUI(); // Refresh UI when sale starts
-            return;
-        }
-        
-        const hours = Math.floor(timeLeft / 3600);
-        const minutes = Math.floor((timeLeft % 3600) / 60);
-        const seconds = timeLeft % 60;
-        
-        countdownDiv.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    }, 1000);
-}
 
 // Calculate token amount based on ETH input
 function calculateTokenAmount() {
@@ -1146,28 +1013,7 @@ async function buyTokens() {
             return;
         }
         
-        // TEST MODE: Simulate buying tokens
-        if (TEST_MODE) {
-            console.log('TEST MODE: Simulating token purchase...');
-            showLoading(buyTokensBtn, true);
-            
-            // Simulate transaction delay
-            setTimeout(() => {
-                showLoading(buyTokensBtn, false);
-                showAlert(`Mock purchase: ${ethAmount} ETH for ${ethAmount * 1000} YTK tokens!`, 'success');
-                
-                // Clear inputs
-                ethAmountInput.value = '';
-                tokenAmountInput.value = '';
-                
-                // Update mock transaction list
-                addTransactionToList(userAddress, ethAmount, ethAmount * 1000, 'Success (Mock)');
-                
-                console.log('✅ TEST MODE: Mock transaction completed');
-            }, 2000);
-            
-            return;
-        }        showLoading(buyTokensBtn, true);
+       
         
         // Check contract status first
         const status = await checkContractStatus();
