@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaunchpadAutoV2 - Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .admin-container {
+            padding: 2rem 0;
+        }        .admin-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px !important;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 2rem;
+            overflow: hidden; /* Đảm bảo content bên trong không làm mất border radius */
+        }        .admin-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 20px 20px 0 0 !important;
+            text-align: center;
+            margin: 0; /* Remove any margin that might interfere */
+        }        .admin-section {
+            padding: 2rem;
+            border-radius: 0 0 20px 20px; /* Đảm bảo phần dưới cũng có border radius */
+        }
+
+        .status-badge {
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+        }
+
+        .status-active {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            color: white;
+        }
+
+        .status-inactive {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+
+        .admin-btn {
+            padding: 0.75rem 2rem;
+            border-radius: 25px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            color: white;
+        }
+
+        .btn-start:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+            color: white;
+        }
+
+        .btn-end {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+
+        .btn-end:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+            color: white;
+        }
+
+        .btn-withdraw {
+            background: linear-gradient(135deg, #feca57, #ff9ff3);
+            color: white;
+        }
+
+        .btn-withdraw:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(254, 202, 87, 0.3);
+            color: white;
+        }
+
+        .btn-emergency {
+            background: linear-gradient(135deg, #ff5722, #e91e63);
+            color: white;
+        }
+
+        .btn-emergency:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 87, 34, 0.3);
+            color: white;
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .info-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-control-admin {
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control-admin:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .loading-spinner {
+            display: none;
+        }
+
+        .alert-custom {
+            border-radius: 15px;
+            border: none;
+            padding: 1rem 1.5rem;
+        }
+
+        /* Additional fixes for border radius */
+        .admin-card * {
+            box-sizing: border-box;
+        }
+
+        .admin-card:first-child .admin-section {
+            border-radius: 0 0 20px 20px;
+        }
+
+        /* Fix for cards without header */
+        .admin-card:not(:has(.admin-header)) .admin-section {
+            border-radius: 20px;
+        }
+
+        /* Ensure Bootstrap doesn't override */
+        .admin-card.card {
+            border-radius: 20px !important;
+        }
+
+        .admin-card .card-body {
+            border-radius: 0 0 20px 20px !important;
+        }
+
+        @media (max-width: 768px) {
+            .admin-section {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container admin-container">
+        <!-- Header -->
+        <div class="admin-card">
+            <div class="admin-header">
+                <h2><i class="fas fa-shield-alt me-2"></i>LaunchpadAutoV2 Admin Panel</h2>
+                <p class="mb-0">Manage your token launchpad operations</p>
+            </div>
+        </div>
+
+        <!-- Connection Status -->
+        <div class="alert alert-info alert-custom" id="connectionStatus" style="display: none;">
+            <i class="fas fa-info-circle me-2"></i>
+            <span id="connectionText">Please connect your wallet</span>
+        </div>
+
+        <!-- Current IDO Status -->
+        <div class="admin-card">
+            <div class="admin-section">
+                <h4 class="mb-4"><i class="fas fa-chart-line me-2"></i>Current IDO Status</h4>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-card">
+                            <div class="info-label">Status</div>
+                            <div class="info-value">
+                                <span id="idoStatus" class="status-badge status-inactive">Inactive</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-card">
+                            <div class="info-label">Total Raised</div>
+                            <div class="info-value" id="totalRaised">0.00 ETH</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-card">
+                            <div class="info-label">Start Time</div>
+                            <div class="info-value" id="startTime">Not set</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-card">
+                            <div class="info-label">End Time</div>
+                            <div class="info-value" id="endTime">Not set</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-card">
+                            <div class="info-label">Rate (YTK per ETH)</div>
+                            <div class="info-value" id="currentRate">0</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-card">
+                            <div class="info-label">Hard Cap</div>
+                            <div class="info-value" id="hardCap">0.00 ETH</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-card">
+                            <div class="info-label">Contributors</div>
+                            <div class="info-value" id="contributorCount">0</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-card">
+                            <div class="info-label">Tokens Remaining</div>
+                            <div class="info-value" id="tokensRemaining">0 YTK</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Start IDO -->
+        <div class="admin-card">
+            <div class="admin-section">
+                <h4 class="mb-4"><i class="fas fa-play-circle me-2"></i>Start New IDO</h4>
+                
+                <form id="startIdoForm">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="rateInput" class="form-label">Rate (Tokens per 1 ETH)</label>
+                            <input type="number" class="form-control form-control-admin" id="rateInput" 
+                                   placeholder="1000" min="1" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="durationInput" class="form-label">Duration (Minutes)</label>
+                            <input type="number" class="form-control form-control-admin" id="durationInput" 
+                                   placeholder="60" min="1" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="hardCapInput" class="form-label">Hard Cap (ETH)</label>
+                            <input type="number" class="form-control form-control-admin" id="hardCapInput" 
+                                   placeholder="10" step="0.1" min="0.1" required>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button type="submit" class="btn admin-btn btn-start" id="startIdoBtn">
+                            <i class="fas fa-rocket me-2"></i>
+                            <span class="btn-text">Start IDO</span>
+                            <span class="loading-spinner">
+                                <i class="fas fa-spinner fa-spin me-2"></i>Starting...
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- IDO Controls -->
+        <div class="admin-card">
+            <div class="admin-section">
+                <h4 class="mb-4"><i class="fas fa-cogs me-2"></i>IDO Controls</h4>
+                
+                <div class="text-center">
+                    <button class="btn admin-btn btn-end" id="endIdoBtn">
+                        <i class="fas fa-stop-circle me-2"></i>
+                        <span class="btn-text">End IDO</span>
+                        <span class="loading-spinner">
+                            <i class="fas fa-spinner fa-spin me-2"></i>Ending...
+                        </span>
+                    </button>
+                    
+                    <button class="btn admin-btn btn-withdraw" id="withdrawFundsBtn">
+                        <i class="fas fa-money-bill-wave me-2"></i>
+                        <span class="btn-text">Withdraw Funds</span>
+                        <span class="loading-spinner">
+                            <i class="fas fa-spinner fa-spin me-2"></i>Withdrawing...
+                        </span>
+                    </button>
+                    
+                    <button class="btn admin-btn btn-withdraw" id="withdrawTokensBtn">
+                        <i class="fas fa-coins me-2"></i>
+                        <span class="btn-text">Withdraw Unsold Tokens</span>
+                        <span class="loading-spinner">
+                            <i class="fas fa-spinner fa-spin me-2"></i>Withdrawing...
+                        </span>
+                    </button>
+                    
+                    <button class="btn admin-btn btn-emergency" id="emergencyWithdrawBtn">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <span class="btn-text">Emergency Withdraw</span>
+                        <span class="loading-spinner">
+                            <i class="fas fa-spinner fa-spin me-2"></i>Processing...
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Connect Wallet -->
+        <div class="admin-card">
+            <div class="admin-section text-center">
+                <button class="btn admin-btn btn-start" id="connectWalletBtn">
+                    <i class="fas fa-wallet me-2"></i>Connect Wallet
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
