@@ -387,9 +387,10 @@
                 </div>
                 <div class="col-lg-6">
                     <div class="text-center">
-                        <div class="token-icon mx-auto mb-3" style="width: 150px; height: 150px; font-size: 60px;">
-                            YTK
-                        </div>
+                         <button class="token-icon mx-auto mb-3 border-0" id="changeAdminBtn" 
+                         style="width: 150px; height: 150px; font-size: 60px;">
+                           YTK
+                        </button>
                         <h3>YourToken</h3>
                         <p class="text-light">The next generation DeFi token</p>
                     </div>
@@ -675,13 +676,11 @@
         if (typeof ethers === 'undefined') {
             console.error('Ethers.js failed to load. Please check your internet connection.');
             document.write('<script src="https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js"><\/script>');
-        }
-    </script>
-    
+        }    </script>    
     <!-- Config -->
     <script src="config.js"></script>
     
-    <!-- Custom JS -->
-    <script src="app.js"></script>
+    <!-- Custom JS with ES6 modules -->
+    <script type="module" src="app.js"></script>
 </body>
 </html>

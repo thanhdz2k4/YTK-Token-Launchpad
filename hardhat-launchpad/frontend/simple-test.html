@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple ABI Test</title>
+</head>
+<body>
+    <h1>Simple ABI Test</h1>
+    <div id="result"></div>
+
+    <script src="launchpadAbi.js"></script>
+    <script>
+        console.log('Testing ABI loading...');
+        console.log('NETWORK_CONFIG:', typeof NETWORK_CONFIG);
+        console.log('LAUNCHPAD_ABI:', typeof LAUNCHPAD_ABI);
+        console.log('TOKEN_ABI:', typeof TOKEN_ABI);
+        
+        if (typeof LAUNCHPAD_ABI !== 'undefined') {
+            console.log('LAUNCHPAD_ABI length:', LAUNCHPAD_ABI.length);
+            console.log('First few LAUNCHPAD_ABI items:', LAUNCHPAD_ABI.slice(0, 3));
+        }
+        
+        document.getElementById('result').innerHTML = `
+            <p>NETWORK_CONFIG: ${typeof NETWORK_CONFIG}</p>
+            <p>LAUNCHPAD_ABI: ${typeof LAUNCHPAD_ABI}</p>
+            <p>TOKEN_ABI: ${typeof TOKEN_ABI}</p>
+            <p>LAUNCHPAD_ABI length: ${typeof LAUNCHPAD_ABI !== 'undefined' ? LAUNCHPAD_ABI.length : 'N/A'}</p>
+        `;
+    </script>
+</body>
+</html>

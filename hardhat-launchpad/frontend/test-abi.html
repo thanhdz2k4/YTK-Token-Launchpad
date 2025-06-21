@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test ABI Import</title>
+</head>
+<body>
+    <h1>Test ABI Import</h1>
+    <div id="result"></div>
+
+    <script src="launchpadAbi.js"></script>
+    <script>
+        // Test if variables are available
+        document.getElementById('result').innerHTML = `
+            <p>NETWORK_CONFIG loaded: ${typeof NETWORK_CONFIG !== 'undefined' ? 'YES' : 'NO'}</p>
+            <p>LAUNCHPAD_ABI loaded: ${typeof LAUNCHPAD_ABI !== 'undefined' ? 'YES' : 'NO'}</p>
+            <p>TOKEN_ABI loaded: ${typeof TOKEN_ABI !== 'undefined' ? 'YES' : 'NO'}</p>
+            <p>Network: ${typeof NETWORK_CONFIG !== 'undefined' ? NETWORK_CONFIG.chainName : 'N/A'}</p>
+            <p>ABI functions count: ${typeof LAUNCHPAD_ABI !== 'undefined' ? LAUNCHPAD_ABI.length : 'N/A'}</p>
+        `;
+    </script>
+</body>
+</html>

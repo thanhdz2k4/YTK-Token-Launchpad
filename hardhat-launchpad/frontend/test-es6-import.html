@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test ES6 Import</title>
+</head>
+<body>
+    <h1>Test ES6 Import</h1>
+    <div id="result"></div>
+
+    <script type="module">
+        import { LAUNCHPAD_ABI, TOKEN_ABI, NETWORK_CONFIG } from './launchpadAbi.js';
+        
+        console.log('Testing ES6 import...');
+        console.log('NETWORK_CONFIG:', typeof NETWORK_CONFIG);
+        console.log('LAUNCHPAD_ABI:', typeof LAUNCHPAD_ABI);
+        console.log('TOKEN_ABI:', typeof TOKEN_ABI);
+        
+        if (typeof LAUNCHPAD_ABI !== 'undefined') {
+            console.log('LAUNCHPAD_ABI length:', LAUNCHPAD_ABI.length);
+        }
+        
+        document.getElementById('result').innerHTML = `
+            <p><strong>ES6 Import Test Results:</strong></p>
+            <p>NETWORK_CONFIG: ${typeof NETWORK_CONFIG !== 'undefined' ? '✅ Loaded' : '❌ Failed'}</p>
+            <p>LAUNCHPAD_ABI: ${typeof LAUNCHPAD_ABI !== 'undefined' ? '✅ Loaded' : '❌ Failed'}</p>
+            <p>TOKEN_ABI: ${typeof TOKEN_ABI !== 'undefined' ? '✅ Loaded' : '❌ Failed'}</p>
+            <p>Network: ${typeof NETWORK_CONFIG !== 'undefined' ? NETWORK_CONFIG.chainName : 'N/A'}</p>
+            <p>LAUNCHPAD_ABI functions: ${typeof LAUNCHPAD_ABI !== 'undefined' ? LAUNCHPAD_ABI.length : 'N/A'}</p>
+            <p>TOKEN_ABI functions: ${typeof TOKEN_ABI !== 'undefined' ? TOKEN_ABI.length : 'N/A'}</p>
+        `;
+    </script>
+</body>
+</html>
